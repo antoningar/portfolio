@@ -1,14 +1,11 @@
 import * as THREE from "three";
 
 import Stats from "three/addons/libs/stats.module.js";
-import { GUI } from "three/addons/libs/lil-gui.module.min.js";
 
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
-let container, stats: Stats, clock: THREE.Clock, gui, mixer: THREE.AnimationMixer, actions: { [x: string]: any; }, activeAction: any, previousAction;
-let camera: THREE.PerspectiveCamera, scene: THREE.Scene, renderer: THREE.WebGLRenderer, model, face;
-
-const api: any = { state: "Walking" };
+let container, stats: Stats, clock: THREE.Clock, mixer: THREE.AnimationMixer;
+let camera: THREE.PerspectiveCamera, scene: THREE.Scene, renderer: THREE.WebGLRenderer, model;
 
 init();
 animate();
@@ -65,7 +62,9 @@ function init() {
       model = gltf.scene;
       scene.add(model);
 
-      createGUI(model, gltf.animations);
+      let walkClip = gltf.animations.find(a => a.name == "Walking")!
+      launchWalking(model, walkClip);
+      //createGUI(model, gltf.animations);
     },
     undefined,
     function (e) {
@@ -85,106 +84,11 @@ function init() {
   container.appendChild(stats.dom);
 }
 
-function createGUI(model: THREE.Group, animations: string | any[]) {
-  const states = [
-    "Idle",
-    "Walking",
-    "Running",
-    "Dance",
-    "Death",
-    "Sitting",
-    "Standing",
-  ];
-  const emotes = ["Jump", "Yes", "No", "Wave", "Punch", "ThumbsUp"];
-
-  gui = new GUI();
-
+function launchWalking(model: THREE.Group, clip: THREE.AnimationClip){
   mixer = new THREE.AnimationMixer(model);
-
-  actions = {};
-
-  for (let i = 0; i < animations.length; i++) {
-    const clip = animations[i];
-    const action = mixer.clipAction(clip);
-    actions[clip.name] = action;
-
-    if (emotes.indexOf(clip.name) >= 0 || states.indexOf(clip.name) >= 4) {
-      action.clampWhenFinished = true;
-      action.loop = THREE.LoopOnce;
-    }
-  }
-
-  // states
-
-  const statesFolder = gui.addFolder("States");
-
-  const clipCtrl = statesFolder.add(api, "state").options(states);
-
-  clipCtrl.onChange(function () {
-    fadeToAction(api.state, 0.5);
-  });
-
-  statesFolder.open();
-
-  // emotes
-
-  const emoteFolder = gui.addFolder("Emotes");
-
-  function createEmoteCallback(name: string) {
-    api[name] = function () {
-      fadeToAction(name, 0.2);
-
-      mixer.addEventListener("finished", restoreState);
-    };
-
-    emoteFolder.add(api, name);
-  }
-
-  function restoreState() {
-    mixer.removeEventListener("finished", restoreState);
-
-    fadeToAction(api.state, 0.2);
-  }
-
-  for (let i = 0; i < emotes.length; i++) {
-    createEmoteCallback(emotes[i]);
-  }
-
-  emoteFolder.open();
-
-  // expressions
-
-  face = model.getObjectByName("Head_4");
-
-  const expressions = Object.keys(face!.morphTargetDictionary);
-  const expressionFolder = gui.addFolder("Expressions");  
-
-  for (let i = 0; i < expressions.length; i++) {
-    expressionFolder
-      .add(face!.morphTargetInfluences, i, 0, 1, 0.01)
-      .name(expressions[i]);
-  }
-
-  activeAction = actions["Walking"];
-  activeAction.play();
-
-  expressionFolder.open();
-}
-
-function fadeToAction(name: string, duration: number) {
-  previousAction = activeAction;
-  activeAction = actions[name];
-
-  if (previousAction !== activeAction) {
-    previousAction.fadeOut(duration);
-  }
-
-  activeAction
-    .reset()
-    .setEffectiveTimeScale(1)
-    .setEffectiveWeight(1)
-    .fadeIn(duration)
-    .play();
+  const action = mixer.clipAction(clip);
+  action.clampWhenFinished = true;
+  action.play();
 }
 
 function onWindowResize() {
@@ -193,8 +97,6 @@ function onWindowResize() {
 
   renderer.setSize(window.innerWidth, window.innerHeight);
 }
-
-//
 
 function animate() {
   const dt = clock.getDelta();
