@@ -6,6 +6,7 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
 let container, stats: Stats, clock: THREE.Clock, mixer: THREE.AnimationMixer;
 let camera: THREE.PerspectiveCamera, scene: THREE.Scene, renderer: THREE.WebGLRenderer, model;
+let models: THREE.Group[] = [];
 
 init();
 animate();
@@ -20,7 +21,7 @@ function init() {
     0.25,
     100
   );
-  camera.position.set(-5, 3, 10);
+  camera.position.set(10, 10, 30);
   camera.lookAt(0, 2, 0);
 
   scene = new THREE.Scene();
@@ -48,22 +49,22 @@ function init() {
   mesh.rotation.x = -Math.PI / 2;
   scene.add(mesh);
 
-  const grid = new THREE.GridHelper(200, 40, 0x000000, 0x000000);
+  const grid = new THREE.GridHelper(200, 80, 0x000000, 0x000000);
   grid.material.opacity = 0.2;
   grid.material.transparent = true;
   scene.add(grid);
 
   // model
-
   const loader = new GLTFLoader();
   loader.load(
-    "../public/discordrobot.glb",
+    "/discordrobot.glb",
     function (gltf) {
       model = gltf.scene;
       scene.add(model);
 
       let walkClip = gltf.animations.find(a => a.name == "Walking")!
       launchWalking(model, walkClip);
+      models.push(model)
       //createGUI(model, gltf.animations);
     },
     undefined,
@@ -106,6 +107,11 @@ function animate() {
   requestAnimationFrame(animate);
 
   renderer.render(scene, camera);
+
+  models.forEach(model => {
+    model.translateZ(.05);
+    console.log(model.position.z)
+  });
 
   stats.update();
 }
