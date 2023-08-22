@@ -1,12 +1,12 @@
 import * as THREE from "three";
 
-import Stats from "three/addons/libs/stats.module.js";
-
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
-let container, stats: Stats, clock: THREE.Clock, mixer: THREE.AnimationMixer;
+import { RobotModel } from "./RobotModel.ts";
+
+let container, clock: THREE.Clock, mixer: THREE.AnimationMixer;
 let camera: THREE.PerspectiveCamera, scene: THREE.Scene, renderer: THREE.WebGLRenderer, model;
-let models: THREE.Group[] = [];
+let models: RobotModel[] = [];
 
 init();
 animate();
@@ -21,7 +21,7 @@ function init() {
     0.25,
     100
   );
-  camera.position.set(10, 10, 30);
+  camera.position.set(25, 20, 40);
   camera.lookAt(0, 2, 0);
 
   scene = new THREE.Scene();
@@ -31,7 +31,6 @@ function init() {
   clock = new THREE.Clock();
 
   // lights
-
   const hemiLight = new THREE.HemisphereLight(0xffffff, 0x8d8d8d, 3);
   hemiLight.position.set(0, 20, 0);
   scene.add(hemiLight);
@@ -39,15 +38,6 @@ function init() {
   const dirLight = new THREE.DirectionalLight(0xffffff, 3);
   dirLight.position.set(0, 20, 10);
   scene.add(dirLight);
-
-  // ground
-
-  const mesh = new THREE.Mesh(
-    new THREE.PlaneGeometry(2000, 2000),
-    new THREE.MeshPhongMaterial({ color: 0xcbcbcb, depthWrite: false })
-  );
-  mesh.rotation.x = -Math.PI / 2;
-  scene.add(mesh);
 
   const grid = new THREE.GridHelper(200, 80, 0x000000, 0x000000);
   grid.material.opacity = 0.2;
@@ -62,10 +52,16 @@ function init() {
       model = gltf.scene;
       scene.add(model);
 
-      let walkClip = gltf.animations.find(a => a.name == "Walking")!
+      let walkClip = gltf.animations.find(a => a.name === "Walking")!
       launchWalking(model, walkClip);
-      models.push(model)
-      //createGUI(model, gltf.animations);
+
+      let plan: [number, string, number, number][] = [
+        [0, "z", 10, 90],
+        [1, "x", 10, 90],
+        [0, "z", 10, 90],
+        [1, "x", 10, 90],
+      ]
+      models.push(new RobotModel(model ,plan))
     },
     undefined,
     function (e) {
@@ -79,10 +75,6 @@ function init() {
   container.appendChild(renderer.domElement);
 
   window.addEventListener("resize", onWindowResize);
-
-  // stats
-  stats = new Stats();
-  container.appendChild(stats.dom);
 }
 
 function launchWalking(model: THREE.Group, clip: THREE.AnimationClip){
@@ -100,18 +92,14 @@ function onWindowResize() {
 }
 
 function animate() {
-  const dt = clock.getDelta();
 
+  const dt = clock.getDelta();
   if (mixer) mixer.update(dt);
 
   requestAnimationFrame(animate);
-
   renderer.render(scene, camera);
 
   models.forEach(model => {
-    model.translateZ(.05);
-    console.log(model.position.z)
+    model.move();
   });
-
-  stats.update();
 }
