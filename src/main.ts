@@ -8,6 +8,13 @@ let container, clock: THREE.Clock, mixer: THREE.AnimationMixer;
 let camera: THREE.PerspectiveCamera, scene: THREE.Scene, renderer: THREE.WebGLRenderer, model;
 let models: RobotModel[] = [];
 
+
+
+const raycaster = new THREE.Raycaster();
+const pointer = new THREE.Vector2();
+
+
+
 init();
 animate();
 
@@ -55,13 +62,14 @@ function init() {
       let walkClip = gltf.animations.find(a => a.name === "Walking")!
       launchWalking(model, walkClip);
 
+      const name: string = gltf.parser.json.skins[0].name;
       let plan: [number, string, number, number][] = [
         [0, "z", 10, 90],
         [1, "x", 10, 90],
         [0, "z", 10, 90],
         [1, "x", 10, 90],
       ]
-      models.push(new RobotModel(model ,plan))
+      models.push(new RobotModel(model ,plan, name))
     },
     undefined,
     function (e) {
@@ -103,3 +111,48 @@ function animate() {
     model.move();
   });
 }
+
+
+
+function click(event: any) {
+	// calculate pointer position in normalized device coordinates
+	// (-1 to +1) for both components
+	pointer.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+	pointer.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
+  // update the picking ray with the camera and pointer position
+  raycaster.setFromCamera(pointer, camera);
+  // calculate objects intersecting the picking ray
+  const intersects = raycaster.intersectObjects(scene.children);
+
+  for ( let i = 0; i < intersects.length; i ++ ) {
+    const robotName: string = getRobotName(intersects[i].object);
+    if (robotName){
+      return onClickRobot(robotName);
+    }
+  }
+}
+
+function getRobotName(obj: THREE.Object3D<THREE.Event>): string {
+  let currentName:string = obj.name;
+  while (currentName !== "RootNode") {
+    if (models.find(r => r.name === currentName)){
+      return currentName;
+    }
+    else {
+      if (obj.parent) {
+        return getRobotName(obj.parent!);
+      }
+      else {
+        return "";
+      }
+    }
+  }
+  return "";
+}
+
+function onClickRobot(robotName: string) {
+  robot: RobotModel: models.find(r => r.name === robotName);
+}
+
+window.addEventListener( 'click', click);

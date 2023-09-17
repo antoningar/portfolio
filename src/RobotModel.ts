@@ -9,12 +9,14 @@ export class RobotModel {
     // number: end rotation
     plan: [number, string, number, number][];
     step: number = 0;
+    name: string;
 
     basePosition: any;
 
-    constructor (group: THREE.Group, plan: [number, string, number, number][]){
+    constructor (group: THREE.Group, plan: [number, string, number, number][], name: string){
         this.group = group;
         this.plan = plan;
+        this.name = name;
         this.basePosition = Object.assign({}, this.group.position);
     }
 
