@@ -2,10 +2,78 @@
 <html lang="en">
 
 <head>
+    <link href="https://fonts.cdnfonts.com/css/turkcell-satura-2" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <title>agar.dev</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport">
     <script type="module" src="src/main.ts"></script>
+    <style>
+        body {
+            margin: 0;
+        }
+        
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        
+        .label-container {
+            border-radius: 5px;
+            border: solid 3px white
+        }
+        
+        .label-outline {
+            border-radius: 3px;
+            margin: 3px;
+            background-color: white;
+        }
+        
+        .label {
+            text-align: justify;
+            margin: 3px;
+            white-space: pre-line;
+            font-family: 'Turkcell Satura', sans-serif;
+            font-weight: 700;
+            font-size: 25px;
+            color: #343434;
+        }
+        
+        .label-modal {
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .label-close {
+            left: 50%;
+            position: inherit;
+            transform: translate(-50%, 0%);
+            margin-top: 5px;
+            border: solid 2px;
+            background-color: #DFDFDF;
+            color: #343434;
+            border-radius: 10px;
+        }
+        
+        .label-close {
+            left: 50%;
+            position: inherit;
+            transform: translate(-50%, 0%);
+            margin-top: 5px;
+            border: solid 2px;
+            background-color: #DFDFDF;
+            color: #343434;
+            border-radius: 10px;
+        }
+        
+        .label-close:hover {
+            cursor: pointer;
+            opacity: .5;
+        }
+    </style>
 </head>
 
 </html>
