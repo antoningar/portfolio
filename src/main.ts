@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
 import { RobotModel } from "./RobotModel.ts";
+import { ROBOTS } from "./robots.ts";
 
 const currentWindow = window as any
 const gsap = currentWindow.gsap;
@@ -73,39 +74,33 @@ function init() {
   dirLight.position.set(0, 20, 10);
   scene.add(dirLight);
 
-  // const grid = new THREE.GridHelper(200, 80, 0x000000, 0x000000);
-  // grid.material.opacity = 0.2;
-  // grid.material.transparent = true;
-  // scene.add(grid);
-
   // model
-  const loader = new GLTFLoader();
-  loader.load(
-    "/discordrobot.glb",
-    function (gltf) {
-      model = gltf.scene;
-      scene.add(model);
-      danceAnimation = gltf.animations.find(a => a.name === "Dance")!
-      
-      walkClip = gltf.animations.find(a => a.name === "Walking")! 
-      launchAnimationClip(model, walkClip);
+  ROBOTS.forEach((robot: any) => {
+    const loader = new GLTFLoader();
+    loader.load(
+      robot.filename,
+      function (gltf) {
+        model = gltf.scene;
+        scene.add(model);
 
-      const name: string = gltf.parser.json.skins[0].name;
-      let plan: [string, number, number][] = [
-        ["z", 10, 90],
-        ["x", 10, 90],
-        ["z", 10, 90],
-        ["x", 10, 90],
-      ]
+        model.translateX(robot.basePosition.x);
+        model.translateY(robot.basePosition.y);
+        model.translateZ(robot.basePosition.z);
 
-      const text: string = "Hello!\nMy name is Antonin, I'm into computing since 2016.\nI did a lot of different things so click on any other robots to learn more about me ! ";
-      models.push(new RobotModel(model ,plan, name, text))
-    },
-    undefined,
-    function (e) {
-      console.error(e);
-    }
-  );
+        console.log(gltf.animations);
+        danceAnimation = gltf.animations.find(a => a.name === "Dance")!;
+        walkClip = gltf.animations.find(a => a.name === "Walking")!;
+        launchAnimationClip(model, walkClip);
+  
+        const name: string = gltf.parser.json.skins[0].name;  
+        models.push(new RobotModel(model, robot.plan, name, robot.text))
+      },
+      undefined,
+      function (e) {
+        console.error(e);
+      }
+    );    
+  });
 
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(window.devicePixelRatio);
