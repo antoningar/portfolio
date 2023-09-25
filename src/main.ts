@@ -11,9 +11,6 @@ let container, clock: THREE.Clock, mixer: THREE.AnimationMixer;
 let camera: THREE.PerspectiveCamera, scene: THREE.Scene, renderer: THREE.WebGLRenderer, model;
 let models: RobotModel[] = [];
 
-let danceAnimation: THREE.AnimationClip;
-let walkClip: THREE.AnimationClip;
-
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
 
@@ -32,7 +29,7 @@ const CameraInitialPosition = {
 
 const CameraInitialDirection = {
   x: 0,
-  y: 2,
+  y: 0,
   z: 0
 }
 
@@ -87,13 +84,14 @@ function init() {
         model.translateY(robot.basePosition.y);
         model.translateZ(robot.basePosition.z);
 
-        console.log(gltf.animations);
-        danceAnimation = gltf.animations.find(a => a.name === "Dance")!;
-        walkClip = gltf.animations.find(a => a.name === "Walking")!;
-        launchAnimationClip(model, walkClip);
+        let walkClip = gltf.animations.find(a => a.name === "Walking")!;
+        let danceClip = gltf.animations.find(a => a.name === "Dance")!;
   
         const name: string = gltf.parser.json.skins[0].name;  
-        models.push(new RobotModel(model, robot.plan, name, robot.text))
+        let robotModel: RobotModel = new RobotModel(model, robot.plan, name, robot.text, walkClip, danceClip) 
+
+        launchAnimationClip(robotModel, walkClip);
+        models.push(robotModel);
       },
       undefined,
       function (e) {
@@ -134,11 +132,12 @@ function initModal() {
   document.body.appendChild(divModal);
 }
 
-function launchAnimationClip(model: THREE.Group, clip: THREE.AnimationClip){
-  mixer = new THREE.AnimationMixer(model);
+function launchAnimationClip(robot: RobotModel | null, clip: THREE.AnimationClip){
+  const mixer = new THREE.AnimationMixer(robot!.group);
   const action = mixer.clipAction(clip);
   action.clampWhenFinished = true;
   action.play();
+  robot!.mixer = mixer;
 }
 
 function onWindowResize() {
@@ -149,19 +148,19 @@ function onWindowResize() {
 
 function animate() {
   const dt = clock.getDelta();
-  if (mixer) mixer.update(dt);
 
   requestAnimationFrame(animate);
   renderer.render(scene, camera);
 
   models.forEach(model => {
     model.move();
+    model.animate(dt);
   });
 }
 
 function click(event: any) {
   if (!focus) {
-    
+    return;
   }
 
 	// calculate pointer position in normalized device coordinates
@@ -204,8 +203,7 @@ function onClosed() {
   moveCamera(CameraInitialPosition, CameraInitialDirection);
   divModal.style.display = "none";
   robotFocus!.isMoving = true;
-  launchAnimationClip(robotFocus!.group, walkClip);
-  
+  launchAnimationClip(robotFocus, robotFocus?.walkClip!);
   robotFocus = null;
 }
 
@@ -235,7 +233,7 @@ function onClickRobot(robotName: string) {
 
   const [position, direction] = robot.getFaceCameraValues();
   moveCamera(position, direction);
-  launchAnimationClip(robot.group, danceAnimation);
+  launchAnimationClip(robot, robot.danceClip);
   printDescription(robot.description);
   
   robotFocus = robot;

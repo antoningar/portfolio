@@ -16,17 +16,25 @@ export class RobotModel {
 
     isMoving: boolean = true;
 
+    mixer: THREE.AnimationMixer | null = null;
+    danceClip: THREE.AnimationClip;
+    walkClip: THREE.AnimationClip;
+
     constructor (
         group: THREE.Group,
         plan: [string, number, number][],
         name: string,
-        description: string ){
+        description: string,
+        walkClip: THREE.AnimationClip,
+        danceClip: THREE.AnimationClip ){
             this.group = group;
             this.plan = plan;
             this.name = name;
             this.description = description;
             this.basePosition = Object.assign({}, this.group.position);
-    }
+            this.walkClip = walkClip;
+            this.danceClip = danceClip;
+        }
 
     move(): void {
         if (!this.isMoving){
@@ -48,6 +56,10 @@ export class RobotModel {
         }
         
         this.group.translateZ(.05);
+    }
+
+    animate(dt: number): void {
+        if (this.mixer) this.mixer.update(dt);
     }
 
     getFaceCameraValues(): [any, any]{
