@@ -77,7 +77,6 @@ export class RobotModel {
             z: this.basePosition.z
         };
         if (currentPlan[0] === 'z') {
-            //deal with z
             if (this.group.position.z < this.basePosition.z) {
                 cameraPosition.z -= RECOIL;
 
@@ -86,7 +85,6 @@ export class RobotModel {
             }
         }
         else {
-            //deal wit x
             if (this.group.position.x < this.basePosition.x) {
                 cameraPosition.x -= RECOIL;
                 
