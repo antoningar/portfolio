@@ -19,21 +19,22 @@ export class RobotModel {
     mixer: THREE.AnimationMixer | null = null;
     danceClip: THREE.AnimationClip;
     walkClip: THREE.AnimationClip;
+    idleClip: THREE.AnimationClip;
 
     constructor (
         group: THREE.Group,
         plan: [string, number, number][],
         name: string,
         description: string,
-        walkClip: THREE.AnimationClip,
-        danceClip: THREE.AnimationClip ){
+        animations: THREE.AnimationClip[]){
             this.group = group;
             this.plan = plan;
             this.name = name;
             this.description = description;
             this.basePosition = Object.assign({}, this.group.position);
-            this.walkClip = walkClip;
-            this.danceClip = danceClip;
+            this.walkClip = animations.find(a => a.name === "Walking")!;
+            this.danceClip = animations.find(a => a.name === "Dance")!;
+            this.idleClip = animations.find(a => a.name === "Idle")!;
         }
 
     move(): void {
@@ -73,7 +74,7 @@ export class RobotModel {
         };
         let cameraDirection = {
             x: this.basePosition.x,
-            y: this.basePosition.y + 7,
+            y: this.basePosition.y + 3,
             z: this.basePosition.z
         };
         if (currentPlan[0] === 'z') {

@@ -7,14 +7,13 @@ import { ROBOTS } from "./robots.ts";
 const currentWindow = window as any
 const gsap = currentWindow.gsap;
 
-let container, clock: THREE.Clock, mixer: THREE.AnimationMixer;
+let container, clock: THREE.Clock;
 let camera: THREE.PerspectiveCamera, scene: THREE.Scene, renderer: THREE.WebGLRenderer, model;
 let models: RobotModel[] = [];
 
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
 
-let robotFocus: RobotModel | null;
 let divModal: HTMLDivElement = document.createElement('div');
 let divLabel: HTMLDivElement = document.createElement('div');
 
@@ -83,14 +82,11 @@ function init() {
         model.translateX(robot.basePosition.x);
         model.translateY(robot.basePosition.y);
         model.translateZ(robot.basePosition.z);
-
-        let walkClip = gltf.animations.find(a => a.name === "Walking")!;
-        let danceClip = gltf.animations.find(a => a.name === "Dance")!;
   
         const name: string = gltf.parser.json.skins[0].name;  
-        let robotModel: RobotModel = new RobotModel(model, robot.plan, name, robot.text, walkClip, danceClip) 
+        let robotModel: RobotModel = new RobotModel(model, robot.plan, name, robot.text, gltf.animations) 
 
-        launchAnimationClip(robotModel, walkClip);
+        launchAnimationClip(robotModel, robotModel.walkClip);
         models.push(robotModel);
       },
       undefined,
@@ -202,9 +198,10 @@ function getRobotName(obj: THREE.Object3D<THREE.Event>): string {
 function onClosed() {
   moveCamera(CameraInitialPosition, CameraInitialDirection);
   divModal.style.display = "none";
-  robotFocus!.isMoving = true;
-  launchAnimationClip(robotFocus, robotFocus?.walkClip!);
-  robotFocus = null;
+  models.forEach((robot) => {
+    robot.isMoving = true;
+    launchAnimationClip(robot, robot.walkClip);
+  })
 }
 
 function printDescription(description: string) {
@@ -229,14 +226,18 @@ function moveCamera(position: any, direction: any) {
 
 function onClickRobot(robotName: string) {
   const robot: RobotModel = models.find(r => r.name === robotName)!;
-  robot.isMoving = false;
+  models.forEach((robot) => {
+    robot.isMoving = false;
+    if (robot.name === robotName){
+      launchAnimationClip(robot, robot.danceClip);
+    } else {
+      launchAnimationClip(robot, robot.idleClip);
+    }
+  });
 
   const [position, direction] = robot.getFaceCameraValues();
   moveCamera(position, direction);
-  launchAnimationClip(robot, robot.danceClip);
   printDescription(robot.description);
-  
-  robotFocus = robot;
 }
 
 window.addEventListener( 'click', click);
