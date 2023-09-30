@@ -73,7 +73,32 @@
             cursor: pointer;
             opacity: .5;
         }
+        
+        .github-img {
+            width: 30px;
+            opacity: .3;
+            transition: transform 300ms;
+        }
+        
+        .github-img:hover {
+            opacity: 1;
+            transform: scale(1.2);
+        }
+        
+        .github-container {
+            position: absolute;
+            top: 95%;
+            left: 1%;
+        }
     </style>
 </head>
+
+<body>
+    <div class="github-container">
+        <a href="https://github.com/antoningar">
+            <img class="github-img" src="github.png">
+        </a>
+    </div>
+</body>
 
 </html>
