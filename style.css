@@ -1,0 +1,92 @@
+body {
+    margin: 0;
+}
+
+.custom_font {
+    font-family: 'CYCLE', sans-serif;
+    text-align: justify;
+}
+
+canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.label-container {
+    border-radius: 5px;
+    border: solid 3px white
+}
+
+.label-outline {
+    border-radius: 3px;
+    margin: 3px;
+    background-color: white;
+}
+
+.label {
+    text-align: justify;
+    margin: 3px;
+    white-space: pre-line;
+    font-family: 'Turkcell Satura', sans-serif;
+    font-size: 20px;
+    color: #343434;
+}
+
+.label-modal {
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.label-close {
+    left: 50%;
+    position: inherit;
+    transform: translate(-50%, 0%);
+    margin-top: 5px;
+    border: solid 2px;
+    background-color: #DFDFDF;
+    color: #343434;
+    border-radius: 10px;
+}
+
+.label-close {
+    left: 50%;
+    position: inherit;
+    transform: translate(-50%, 0%);
+    margin-top: 5px;
+    border: solid 2px;
+    background-color: #DFDFDF;
+    color: #343434;
+    border-radius: 10px;
+}
+
+.label-close:hover {
+    cursor: pointer;
+    opacity: .5;
+}
+
+.github-img {
+    width: 30px;
+    opacity: .3;
+    transition: transform 300ms;
+}
+
+.github-img:hover {
+    opacity: 1;
+    transform: scale(1.2);
+}
+
+.github-container {
+    position: absolute;
+    top: 95%;
+    left: 1%;
+}
+
+.resume-containter {
+    position: absolute;
+    top: 10%;
+    width: 20%;
+    left: 10%;
+}

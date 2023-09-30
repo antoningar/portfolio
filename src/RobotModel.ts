@@ -64,7 +64,7 @@ export class RobotModel {
     }
 
     getFaceCameraValues(): [any, any]{
-        const RECOIL: number = 20;
+        const RECOIL: number = 19;
 
         let currentPlan: [string, number, number] = this.plan[this.step];
         let cameraPosition = {

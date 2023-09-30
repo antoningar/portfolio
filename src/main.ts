@@ -126,7 +126,7 @@ function initModal() {
   let divContainer: HTMLDivElement = document.createElement('div');
   divContainer.className = "label-container";
 
-  divLabel.className = "label";
+  divLabel.className = "label custom_font";
 
   let divOutline: HTMLDivElement = document.createElement('div');
   divOutline.className = "label-outline";

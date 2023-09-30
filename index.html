@@ -2,101 +2,25 @@
 <html lang="en">
 
 <head>
-    <link href="https://fonts.cdnfonts.com/css/turkcell-satura-2" rel="stylesheet">
+    <link href="https://fonts.cdnfonts.com/css/arena-condensed-light" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <title>agar.dev</title>
     <meta charset="utf-8">
     <meta name="viewport">
     <script type="module" src="src/main.ts"></script>
     <script type="module" src="src/OrbitControl.js"></script>
-    <style>
-        body {
-            margin: 0;
-        }
-        
-        canvas {
-            display: block;
-            width: 100%;
-            height: 100%;
-        }
-        
-        .label-container {
-            border-radius: 5px;
-            border: solid 3px white
-        }
-        
-        .label-outline {
-            border-radius: 3px;
-            margin: 3px;
-            background-color: white;
-        }
-        
-        .label {
-            text-align: justify;
-            margin: 3px;
-            white-space: pre-line;
-            font-family: 'Turkcell Satura', sans-serif;
-            font-weight: 700;
-            font-size: 25px;
-            color: #343434;
-        }
-        
-        .label-modal {
-            position: absolute;
-            top: 20%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-        
-        .label-close {
-            left: 50%;
-            position: inherit;
-            transform: translate(-50%, 0%);
-            margin-top: 5px;
-            border: solid 2px;
-            background-color: #DFDFDF;
-            color: #343434;
-            border-radius: 10px;
-        }
-        
-        .label-close {
-            left: 50%;
-            position: inherit;
-            transform: translate(-50%, 0%);
-            margin-top: 5px;
-            border: solid 2px;
-            background-color: #DFDFDF;
-            color: #343434;
-            border-radius: 10px;
-        }
-        
-        .label-close:hover {
-            cursor: pointer;
-            opacity: .5;
-        }
-        
-        .github-img {
-            width: 30px;
-            opacity: .3;
-            transition: transform 300ms;
-        }
-        
-        .github-img:hover {
-            opacity: 1;
-            transform: scale(1.2);
-        }
-        
-        .github-container {
-            position: absolute;
-            top: 95%;
-            left: 1%;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
+    <div class="resume-containter custom_font">
+        Hello!<br/> My name is Antonin,<br/> I'm a freelance backend developer in love with the craft.<br/> On this website, clic on any robot to have details about one of my side project.<br/> They are all available on my <a href="https://github.com/antoningar">github profile</a>.<br/>
+        <br/> Now, I am currently focused on crafting applications to enhance the developer experience and ensuring optimal results.<br/> To achieve this goal, I'm trying various development processes such as TDD or BDD, as well as different architectures
+        like hexagonal or clean architecture to find my favorites one.<br/>
+        <br/> Do not hesitate to contact me at : antoningaranto@protonmail.com
+    </div>
     <div class="github-container">
-        <a href="https://github.com/antoningar">
+        <a href="https://github.com/antoningar/portfolio">
             <img class="github-img" src="github.png">
         </a>
     </div>
