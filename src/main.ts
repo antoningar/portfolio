@@ -4,6 +4,8 @@ import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { RobotModel } from "./RobotModel.ts";
 import { ROBOTS } from "./robots.ts";
 
+import { OrbitControls } from "./OrbitControl.js";
+
 const currentWindow = window as any
 const gsap = currentWindow.gsap;
 
@@ -11,6 +13,7 @@ let container, clock: THREE.Clock;
 let camera: THREE.PerspectiveCamera, scene: THREE.Scene, renderer: THREE.WebGLRenderer, model;
 let models: RobotModel[] = [];
 
+let control: OrbitControls;
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
 
@@ -101,7 +104,19 @@ function init() {
   renderer.setSize(window.innerWidth, window.innerHeight);
   container.appendChild(renderer.domElement);
 
+  setControl();
+
   window.addEventListener("resize", onWindowResize);
+}
+
+function setControl() {
+  // Camera control
+  control = new OrbitControls( camera, renderer.domElement );
+
+  control.screenSpacePanning = false;
+  control.enableZoom = false;
+
+  control.maxPolarAngle = Math.PI / 2;
 }
 
 function initModal() {
@@ -155,10 +170,6 @@ function animate() {
 }
 
 function click(event: any) {
-  if (!focus) {
-    return;
-  }
-
 	// calculate pointer position in normalized device coordinates
 	// (-1 to +1) for both components
 	pointer.x = ( event.clientX / window.innerWidth ) * 2 - 1;
@@ -197,6 +208,7 @@ function getRobotName(obj: THREE.Object3D<THREE.Event>): string {
 
 function onClosed() {
   moveCamera(CameraInitialPosition, CameraInitialDirection);
+  setControl();
   divModal.style.display = "none";
   models.forEach((robot) => {
     robot.isMoving = true;
@@ -214,7 +226,7 @@ function moveCamera(position: any, direction: any) {
     x: position.x,
     y: position.y,
     z: position.z,
-    duration: 1, 
+    duration: .3, 
     onUpdate: function() {
       camera.lookAt(
         direction.x,
@@ -225,6 +237,7 @@ function moveCamera(position: any, direction: any) {
 }
 
 function onClickRobot(robotName: string) {
+  control.dispose();
   const robot: RobotModel = models.find(r => r.name === robotName)!;
   models.forEach((robot) => {
     robot.isMoving = false;
@@ -240,4 +253,4 @@ function onClickRobot(robotName: string) {
   printDescription(robot.description);
 }
 
-window.addEventListener( 'click', click);
+window.addEventListener( 'mousedown', click);
