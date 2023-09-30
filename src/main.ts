@@ -132,7 +132,7 @@ function initModal() {
   divOutline.className = "label-outline";
 
   let btnClosed: HTMLButtonElement = document.createElement('button');
-  btnClosed.innerHTML = "CLOSE X";
+  btnClosed.innerHTML = "&nbsp;X&nbsp;";
   btnClosed.className = "label-close";
   btnClosed.onclick = onClosed;
 
