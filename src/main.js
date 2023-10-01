@@ -36,9 +36,6 @@ const CameraInitialDirection = {
     z: 0
 }
 
-init();
-animate();
-
 function init() {
     container = document.createElement("div");
     document.body.appendChild(container);
@@ -228,6 +225,9 @@ function onClosed() {
         launchAnimationClip(robot, robot.walkClip);
     })
 }
+
+init();
+animate();
 
 document.getElementById("closeModal").onclick = onClosed;
 window.addEventListener('mousedown', click);

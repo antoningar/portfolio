@@ -11,7 +11,7 @@ export const ROBOTS = [{
             ["z", 10, 90],
             ["x", 10, 90],
         ],
-        title: "discord bot rap jeu",
+        title: "Discord Bot Rap Jeu",
         text: "Discord bot inspired by the Youtube show Rap Jeu\nAllowing users to play roland gamos and mystery cards\nBot in python, using discord.py, sqlite (leaderboard) and spotify API\nWas deployed on OVH vps for a 400+ users discord server",
         repository: "https://github.com/antoningar/BotRapJeu"
     },
@@ -28,7 +28,7 @@ export const ROBOTS = [{
             ["z", 10, -90],
             ["x", 10, -90],
         ],
-        title: "discord chatgpt bot",
+        title: "Discord Chatgpt Bot",
         text: "Discord bot allowing users to trigger ChatGPT in a private conversation\nBot in C#, using discord .net, openAI API and cosmos DB (conversation historic)\nCI/CD on azure devops, deploy on an azure web app as a webjob",
         repository: "https://github.com/antoningar/GptBot"
     },
@@ -45,7 +45,7 @@ export const ROBOTS = [{
             ["z", 10, -90],
             ["x", 10, -90],
         ],
-        title: "discord geoguessr bot",
+        title: "Discord Geoguessr Bot",
         text: "Discord bot allowing users to play multiplayer geoguessr games without premium account\nBot in C#, using discord .net and a personnal selenium remotedriver (on OVH vps)\nCI/CD on azure devops, deploy on an azure web app as a webjob",
         repository: "https://github.com/antoningar/BotGeoguessr"
     },
@@ -62,7 +62,7 @@ export const ROBOTS = [{
             ["z", 10, -90],
             ["x", 10, -90],
         ],
-        title: "REST snepapi",
+        title: "REST Snepapi",
         text: "Rest unofficial SNEP API to see all french music certifications\nAPI in python, using django, drf, beautifull soup and sqlite\nCI on gitlab, deployed on OVH vps",
         repository: "https://github.com/antoningar/snepapi"
     }
