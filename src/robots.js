@@ -1,8 +1,9 @@
-export const ROBOTS: any = [
-    {
-        filename: "/rapjeurobot.glb",
+export const ROBOTS = [{
+        filename: "./public/rapjeurobot.glb",
         basePosition: {
-            x: 0, y: 0, z: 0
+            x: 0,
+            y: 0,
+            z: 0
         },
         plan: [
             ["z", 10, 90],
@@ -15,9 +16,11 @@ export const ROBOTS: any = [
         repository: "https://github.com/antoningar/BotRapJeu"
     },
     {
-        filename: "/gptrobot.glb",
+        filename: "./public/gptrobot.glb",
         basePosition: {
-            x: 10, y: 0, z: 10
+            x: 10,
+            y: 0,
+            z: 10
         },
         plan: [
             ["z", 10, -90],
@@ -30,9 +33,11 @@ export const ROBOTS: any = [
         repository: "https://github.com/antoningar/GptBot"
     },
     {
-        filename: "/geoguessrrobot.glb",
+        filename: "./public/geoguessrrobot.glb",
         basePosition: {
-            x: -10, y: 0, z: -10
+            x: -10,
+            y: 0,
+            z: -10
         },
         plan: [
             ["z", 10, -90],
@@ -45,9 +50,11 @@ export const ROBOTS: any = [
         repository: "https://github.com/antoningar/BotGeoguessr"
     },
     {
-        filename: "/sneprobot.glb",
+        filename: "./public/sneprobot.glb",
         basePosition: {
-            x: 10, y: 0, z: -10
+            x: 10,
+            y: 0,
+            z: -10
         },
         plan: [
             ["z", 10, -90],
