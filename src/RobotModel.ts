@@ -11,6 +11,7 @@ export class RobotModel {
 
     name: string;
     description: string;
+    title: string;
 
     basePosition: any;
 
@@ -26,11 +27,13 @@ export class RobotModel {
         plan: [string, number, number][],
         name: string,
         description: string,
+        title: string,
         animations: THREE.AnimationClip[]){
             this.group = group;
             this.plan = plan;
             this.name = name;
             this.description = description;
+            this.title = title;
             this.basePosition = Object.assign({}, this.group.position);
             this.walkClip = animations.find(a => a.name === "Walking")!;
             this.danceClip = animations.find(a => a.name === "Dance")!;

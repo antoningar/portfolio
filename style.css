@@ -25,7 +25,7 @@ canvas {
 }
 
 .label {
-    text-align: justify;
+    text-align: left;
     margin: 3px;
     white-space: pre-line;
     font-family: 'Turkcell Satura', sans-serif;
@@ -35,9 +35,13 @@ canvas {
 
 .label-modal {
     position: absolute;
-    top: 20%;
+    top: 30%;
     left: 50%;
     transform: translate(-50%, -50%);
+}
+
+.label-content {
+    padding-bottom: 35px;
 }
 
 .label-close {
@@ -49,6 +53,12 @@ canvas {
     background-color: #DFDFDF;
     color: #343434;
     border-radius: 10px;
+}
+
+.label-title {
+    font-size: 30px;
+    text-align: center;
+    margin-bottom: 20px;
 }
 
 .label-close {
@@ -80,13 +90,13 @@ canvas {
 
 .github-container {
     position: absolute;
-    top: 95%;
-    left: 1%;
+    left: 95%;
+    transform: translate(-50%, 0%);
 }
 
 .resume-containter {
     position: absolute;
     top: 10%;
-    width: 20%;
-    left: 10%;
+    width: 25%;
+    left: 3%;
 }

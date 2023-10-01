@@ -17,8 +17,9 @@ let control: OrbitControls;
 const raycaster = new THREE.Raycaster();
 const pointer = new THREE.Vector2();
 
-let divModal: HTMLDivElement = document.createElement('div');
-let divLabel: HTMLDivElement = document.createElement('div');
+let modal: HTMLElement | null = document.getElementById("modal");
+let modalTitle: HTMLElement | null = document.getElementById("label-title");
+let modalLabel: HTMLElement | null = document.getElementById("label");
 
 //x=width(left/right)
 //y=height(top/bottom)
@@ -37,7 +38,6 @@ const CameraInitialDirection = {
 
 init();
 animate();
-initModal();
 
 function init() {
   container = document.createElement("div");
@@ -87,7 +87,8 @@ function init() {
         model.translateZ(robot.basePosition.z);
   
         const name: string = gltf.parser.json.skins[0].name;  
-        let robotModel: RobotModel = new RobotModel(model, robot.plan, name, robot.text, gltf.animations) 
+        let robotModel: RobotModel = new RobotModel(
+          model, robot.plan, name, robot.text, robot.title, gltf.animations) 
 
         launchAnimationClip(robotModel, robotModel.walkClip);
         models.push(robotModel);
@@ -117,30 +118,6 @@ function setControl() {
   control.enableZoom = false;
 
   control.maxPolarAngle = Math.PI / 2;
-}
-
-function initModal() {
-  divModal.className = "label-modal";
-  divModal.style.display = "none";
-
-  let divContainer: HTMLDivElement = document.createElement('div');
-  divContainer.className = "label-container";
-
-  divLabel.className = "label custom_font";
-
-  let divOutline: HTMLDivElement = document.createElement('div');
-  divOutline.className = "label-outline";
-
-  let btnClosed: HTMLButtonElement = document.createElement('button');
-  btnClosed.innerHTML = "&nbsp;X&nbsp;";
-  btnClosed.className = "label-close";
-  btnClosed.onclick = onClosed;
-
-  divOutline.appendChild(divLabel);
-  divContainer.appendChild(divOutline);
-  divModal.appendChild(divContainer);
-  divModal.appendChild(btnClosed);
-  document.body.appendChild(divModal);
 }
 
 function launchAnimationClip(robot: RobotModel | null, clip: THREE.AnimationClip){
@@ -206,19 +183,10 @@ function getRobotName(obj: THREE.Object3D<THREE.Event>): string {
   return "";
 }
 
-function onClosed() {
-  moveCamera(CameraInitialPosition, CameraInitialDirection);
-  setControl();
-  divModal.style.display = "none";
-  models.forEach((robot) => {
-    robot.isMoving = true;
-    launchAnimationClip(robot, robot.walkClip);
-  })
-}
-
-function printDescription(description: string) {
-  divModal.style.display = "block";
-  divLabel.innerHTML = description;
+function printDescription(description: string, title: string) {
+  modal!.style.display = "block";
+  modalLabel!.innerHTML = description;
+  modalTitle!.innerHTML = title;
 }
 
 function moveCamera(position: any, direction: any) {
@@ -250,7 +218,18 @@ function onClickRobot(robotName: string) {
 
   const [position, direction] = robot.getFaceCameraValues();
   moveCamera(position, direction);
-  printDescription(robot.description);
+  printDescription(robot.description, robot.title);
 }
 
-window.addEventListener( 'mousedown', click);
+function onClosed() {
+  moveCamera(CameraInitialPosition, CameraInitialDirection);
+  setControl();
+  modal!.style.display = "none";
+  models.forEach((robot) => {
+    robot.isMoving = true;
+    launchAnimationClip(robot, robot.walkClip);
+  })
+}
+
+document.getElementById("closeModal")!.onclick=onClosed;
+window.addEventListener('mousedown', click);
