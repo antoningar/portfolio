@@ -1,14 +1,40 @@
 import * as THREE from "three";
-
-import Stats from "three/addons/libs/stats.module.js";
-import { GUI } from "three/addons/libs/lil-gui.module.min.js";
-
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 
-let container, stats: Stats, clock: THREE.Clock, gui, mixer: THREE.AnimationMixer, actions: { [x: string]: any; }, activeAction: any, previousAction;
-let camera: THREE.PerspectiveCamera, scene: THREE.Scene, renderer: THREE.WebGLRenderer, model, face;
+import { RobotModel } from "./RobotModel.ts";
+import { ROBOTS } from "./robots.ts";
 
-const api: any = { state: "Walking" };
+import { OrbitControls } from "./OrbitControl.js";
+
+const currentWindow = window as any
+const gsap = currentWindow.gsap;
+
+let container, clock: THREE.Clock;
+let camera: THREE.PerspectiveCamera, scene: THREE.Scene, renderer: THREE.WebGLRenderer, model;
+let models: RobotModel[] = [];
+
+let control: OrbitControls;
+const raycaster = new THREE.Raycaster();
+const pointer = new THREE.Vector2();
+
+let modal: HTMLElement | null = document.getElementById("modal");
+let modalTitle: HTMLElement | null = document.getElementById("label-title");
+let modalLabel: HTMLElement | null = document.getElementById("label");
+
+//x=width(left/right)
+//y=height(top/bottom)
+//z=zoom(in/out)
+const CameraInitialPosition = {
+  x: 25,
+  y: 20,
+  z: 40
+}
+
+const CameraInitialDirection = {
+  x: 0,
+  y: 0,
+  z: 0
+}
 
 init();
 animate();
@@ -23,8 +49,14 @@ function init() {
     0.25,
     100
   );
-  camera.position.set(-5, 3, 10);
-  camera.lookAt(0, 2, 0);
+  camera.position.set(
+    CameraInitialPosition.x,
+    CameraInitialPosition.y,
+    CameraInitialPosition.z);
+  camera.lookAt(
+    CameraInitialDirection.x,
+    CameraInitialDirection.y,
+    CameraInitialDirection.z);
 
   scene = new THREE.Scene();
   scene.background = new THREE.Color(0xe0e0e0);
@@ -33,7 +65,6 @@ function init() {
   clock = new THREE.Clock();
 
   // lights
-
   const hemiLight = new THREE.HemisphereLight(0xffffff, 0x8d8d8d, 3);
   hemiLight.position.set(0, 20, 0);
   scene.add(hemiLight);
@@ -42,168 +73,163 @@ function init() {
   dirLight.position.set(0, 20, 10);
   scene.add(dirLight);
 
-  // ground
-
-  const mesh = new THREE.Mesh(
-    new THREE.PlaneGeometry(2000, 2000),
-    new THREE.MeshPhongMaterial({ color: 0xcbcbcb, depthWrite: false })
-  );
-  mesh.rotation.x = -Math.PI / 2;
-  scene.add(mesh);
-
-  const grid = new THREE.GridHelper(200, 40, 0x000000, 0x000000);
-  grid.material.opacity = 0.2;
-  grid.material.transparent = true;
-  scene.add(grid);
-
   // model
+  ROBOTS.forEach((robot: any) => {
+    const loader = new GLTFLoader();
+    loader.load(
+      robot.filename,
+      function (gltf) {
+        model = gltf.scene;
+        scene.add(model);
 
-  const loader = new GLTFLoader();
-  loader.load(
-    "../public/discordrobot.glb",
-    function (gltf) {
-      model = gltf.scene;
-      scene.add(model);
+        model.translateX(robot.basePosition.x);
+        model.translateY(robot.basePosition.y);
+        model.translateZ(robot.basePosition.z);
+  
+        const name: string = gltf.parser.json.skins[0].name;  
+        let robotModel: RobotModel = new RobotModel(
+          model, robot.plan, name, robot.text, robot.title, gltf.animations) 
 
-      createGUI(model, gltf.animations);
-    },
-    undefined,
-    function (e) {
-      console.error(e);
-    }
-  );
+        launchAnimationClip(robotModel, robotModel.walkClip);
+        models.push(robotModel);
+      },
+      undefined,
+      function (e) {
+        console.error(e);
+      }
+    );    
+  });
 
   renderer = new THREE.WebGLRenderer({ antialias: true });
   renderer.setPixelRatio(window.devicePixelRatio);
   renderer.setSize(window.innerWidth, window.innerHeight);
   container.appendChild(renderer.domElement);
 
+  setControl();
+
   window.addEventListener("resize", onWindowResize);
-
-  // stats
-  stats = new Stats();
-  container.appendChild(stats.dom);
 }
 
-function createGUI(model: THREE.Group, animations: string | any[]) {
-  const states = [
-    "Idle",
-    "Walking",
-    "Running",
-    "Dance",
-    "Death",
-    "Sitting",
-    "Standing",
-  ];
-  const emotes = ["Jump", "Yes", "No", "Wave", "Punch", "ThumbsUp"];
+function setControl() {
+  // Camera control
+  control = new OrbitControls( camera, renderer.domElement );
 
-  gui = new GUI();
+  control.screenSpacePanning = false;
+  control.enableZoom = false;
 
-  mixer = new THREE.AnimationMixer(model);
-
-  actions = {};
-
-  for (let i = 0; i < animations.length; i++) {
-    const clip = animations[i];
-    const action = mixer.clipAction(clip);
-    actions[clip.name] = action;
-
-    if (emotes.indexOf(clip.name) >= 0 || states.indexOf(clip.name) >= 4) {
-      action.clampWhenFinished = true;
-      action.loop = THREE.LoopOnce;
-    }
-  }
-
-  // states
-
-  const statesFolder = gui.addFolder("States");
-
-  const clipCtrl = statesFolder.add(api, "state").options(states);
-
-  clipCtrl.onChange(function () {
-    fadeToAction(api.state, 0.5);
-  });
-
-  statesFolder.open();
-
-  // emotes
-
-  const emoteFolder = gui.addFolder("Emotes");
-
-  function createEmoteCallback(name: string) {
-    api[name] = function () {
-      fadeToAction(name, 0.2);
-
-      mixer.addEventListener("finished", restoreState);
-    };
-
-    emoteFolder.add(api, name);
-  }
-
-  function restoreState() {
-    mixer.removeEventListener("finished", restoreState);
-
-    fadeToAction(api.state, 0.2);
-  }
-
-  for (let i = 0; i < emotes.length; i++) {
-    createEmoteCallback(emotes[i]);
-  }
-
-  emoteFolder.open();
-
-  // expressions
-
-  face = model.getObjectByName("Head_4");
-
-  const expressions = Object.keys(face!.morphTargetDictionary);
-  const expressionFolder = gui.addFolder("Expressions");  
-
-  for (let i = 0; i < expressions.length; i++) {
-    expressionFolder
-      .add(face!.morphTargetInfluences, i, 0, 1, 0.01)
-      .name(expressions[i]);
-  }
-
-  activeAction = actions["Walking"];
-  activeAction.play();
-
-  expressionFolder.open();
+  control.maxPolarAngle = Math.PI / 2;
 }
 
-function fadeToAction(name: string, duration: number) {
-  previousAction = activeAction;
-  activeAction = actions[name];
-
-  if (previousAction !== activeAction) {
-    previousAction.fadeOut(duration);
-  }
-
-  activeAction
-    .reset()
-    .setEffectiveTimeScale(1)
-    .setEffectiveWeight(1)
-    .fadeIn(duration)
-    .play();
+function launchAnimationClip(robot: RobotModel | null, clip: THREE.AnimationClip){
+  const mixer = new THREE.AnimationMixer(robot!.group);
+  const action = mixer.clipAction(clip);
+  action.clampWhenFinished = true;
+  action.play();
+  robot!.mixer = mixer;
 }
 
 function onWindowResize() {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
-
   renderer.setSize(window.innerWidth, window.innerHeight);
 }
-
-//
 
 function animate() {
   const dt = clock.getDelta();
 
-  if (mixer) mixer.update(dt);
-
   requestAnimationFrame(animate);
-
   renderer.render(scene, camera);
 
-  stats.update();
+  models.forEach(model => {
+    model.move();
+    model.animate(dt);
+  });
 }
+
+function click(event: any) {
+	// calculate pointer position in normalized device coordinates
+	// (-1 to +1) for both components
+	pointer.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+	pointer.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
+  // update the picking ray with the camera and pointer position
+  raycaster.setFromCamera(pointer, camera);
+  // calculate objects intersecting the picking ray
+  const intersects = raycaster.intersectObjects(scene.children);
+
+  for ( let i = 0; i < intersects.length; i ++ ) {
+    const robotName: string = getRobotName(intersects[i].object);
+    if (robotName){
+      return onClickRobot(robotName);
+    }
+  }
+}
+
+function getRobotName(obj: THREE.Object3D<THREE.Event>): string {
+  let currentName:string = obj.name;
+  while (currentName !== "RootNode") {
+    if (models.find(r => r.name === currentName)){
+      return currentName;
+    }
+    else {
+      if (obj.parent) {
+        return getRobotName(obj.parent!);
+      }
+      else {
+        return "";
+      }
+    }
+  }
+  return "";
+}
+
+function printDescription(description: string, title: string) {
+  modal!.style.display = "block";
+  modalLabel!.innerHTML = description;
+  modalTitle!.innerHTML = title;
+}
+
+function moveCamera(position: any, direction: any) {
+  gsap.to(camera.position, {
+    x: position.x,
+    y: position.y,
+    z: position.z,
+    duration: .3, 
+    onUpdate: function() {
+      camera.lookAt(
+        direction.x,
+        direction.y,
+        direction.z);
+    }
+  })
+}
+
+function onClickRobot(robotName: string) {
+  control.dispose();
+  const robot: RobotModel = models.find(r => r.name === robotName)!;
+  models.forEach((robot) => {
+    robot.isMoving = false;
+    if (robot.name === robotName){
+      launchAnimationClip(robot, robot.danceClip);
+    } else {
+      launchAnimationClip(robot, robot.idleClip);
+    }
+  });
+
+  const [position, direction] = robot.getFaceCameraValues();
+  moveCamera(position, direction);
+  printDescription(robot.description, robot.title);
+}
+
+function onClosed() {
+  moveCamera(CameraInitialPosition, CameraInitialDirection);
+  setControl();
+  modal!.style.display = "none";
+  models.forEach((robot) => {
+    robot.isMoving = true;
+    launchAnimationClip(robot, robot.walkClip);
+  })
+}
+
+document.getElementById("closeModal")!.onclick=onClosed;
+window.addEventListener('mousedown', click);

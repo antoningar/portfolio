@@ -2,11 +2,12 @@ lockfileVersion: 5.4
 
 specifiers:
   '@types/three': ^0.155.0
+  three: ^0.156.1
   typescript: ^5.0.2
   vite: ^4.4.5
 
 dependencies:
-  three: 0.155.0
+  three: 0.156.1
 
 devDependencies:
   '@types/three': 0.155.0
@@ -317,6 +318,10 @@ packages:
     resolution: {integrity: sha512-R0XvVJ9WusLiqTCEiGCmICCMplcCkIwwR11mOSD9CR5u+IXYdiseeEuXCVAjS54zqwkLcPNnmU4OeJ6tUrWhDw==}
     engines: {node: '>=0.10.0'}
     dev: true
+
+  /three/0.156.1:
+    resolution: {integrity: sha512-kP7H0FK9d/k6t/XvQ9FO6i+QrePoDcNhwl0I02+wmUJRNSLCUIDMcfObnzQvxb37/0Uc9TDT0T1HgsRRrO6SYQ==}
+    dev: false
 
   /typescript/5.1.6:
     resolution: {integrity: sha512-zaWCozRZ6DLEWAWFrVDz1H6FVXzUSfTy5FUMWsQlU8Ym5JP9eO4xkTIROFCQvhQf61z6O/G6ugw3SgAnvvm+HA==}
