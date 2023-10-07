@@ -33,9 +33,10 @@ export class RobotModel {
         this.description = description;
         this.title = title;
         this.basePosition = Object.assign({}, this.group.position);
-        this.walkClip = animations.find(a => a.name === "Walking");
-        this.danceClip = animations.find(a => a.name === "Dance");
-        this.idleClip = animations.find(a => a.name === "Idle");
+        this.walkClip = animations.find(a => a.name === "tvwalk");
+        this.danceClip = animations.find(a => a.name === "tvwalk");
+        this.idleClip = animations.find(a => a.name === "tvwalk");
+        this.group.rotateY(Math.PI);
     }
 
     move() {
@@ -57,7 +58,7 @@ export class RobotModel {
             this.basePosition = Object.assign({}, this.group.position);
         }
 
-        this.group.translateZ(.05);
+        this.group.translateZ(-.05);
     }
 
     animate(dt) {
@@ -65,17 +66,17 @@ export class RobotModel {
     }
 
     getFaceCameraValues() {
-        const RECOIL = 19;
+        const RECOIL = 26;
 
         let currentPlan = this.plan[this.step];
         let cameraPosition = {
             x: this.basePosition.x,
-            y: this.basePosition.y,
+            y: this.basePosition.y + 10,
             z: this.basePosition.z
         };
         let cameraDirection = {
             x: this.basePosition.x,
-            y: this.basePosition.y + 3,
+            y: this.basePosition.y + 5,
             z: this.basePosition.z
         };
         if (currentPlan[0] === 'z') {

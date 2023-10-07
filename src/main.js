@@ -83,7 +83,8 @@ function init() {
                 model.translateY(robot.basePosition.y);
                 model.translateZ(robot.basePosition.z);
 
-                const name = gltf.parser.json.skins[0].name;
+                const name = gltf.parser.json.nodes.slice(-1)[0].name
+
                 let robotModel = new RobotModel(
                     model, robot.plan, name, robot.text, robot.title, gltf.animations)
 
