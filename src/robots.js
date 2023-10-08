@@ -23,10 +23,10 @@ export const ROBOTS = [{
             z: 10
         },
         plan: [
-            ["z", 10, -90],
+            ["z", 1, 90],
             ["x", 10, -90],
-            ["z", 10, -90],
-            ["x", 10, -90],
+            ["z", 10, 90],
+            ["x", 1, 90],
         ],
         title: "Discord Chatgpt Bot",
         text: "Discord bot allowing users to trigger ChatGPT in a private conversation\nBot in C#, using discord .net, openAI API and cosmos DB (conversation historic)\nCI/CD on azure devops, deploy on an azure web app as a webjob",
@@ -40,9 +40,9 @@ export const ROBOTS = [{
             z: -10
         },
         plan: [
-            ["z", 10, -90],
+            ["z", 5, -90],
             ["x", 10, -90],
-            ["z", 10, -90],
+            ["z", 5, -90],
             ["x", 10, -90],
         ],
         title: "Discord Geoguessr Bot",
@@ -57,10 +57,10 @@ export const ROBOTS = [{
             z: -10
         },
         plan: [
-            ["z", 10, -90],
-            ["x", 10, -90],
-            ["z", 10, -90],
-            ["x", 10, -90],
+            ["z", 1, -90],
+            ["x", 5, 90],
+            ["z", 5, -90],
+            ["x", 1, -90],
         ],
         title: "REST Snepapi",
         text: "Rest unofficial SNEP API to see all french music certifications\nAPI in python, using django, drf, beautifull soup and sqlite\nCI on gitlab, deployed on OVH vps",
