@@ -205,11 +205,7 @@ function onClickRobot(robotName) {
     const robot = models.find(r => r.name === robotName);
     models.forEach((robot) => {
         robot.isMoving = false;
-        if (robot.name === robotName) {
-            launchAnimationClip(robot, robot.danceClip);
-        } else {
-            launchAnimationClip(robot, robot.idleClip);
-        }
+        robot.mixer = null;
     });
 
     const [position, direction] = robot.getFaceCameraValues();
