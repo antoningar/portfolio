@@ -10,6 +10,7 @@ export class RobotModel {
     name;
     description;
     title;
+    repository;
 
     basePosition;
 
@@ -26,7 +27,8 @@ export class RobotModel {
         name,
         description,
         title,
-        animations) {
+        animations,
+        repository) {
         this.group = group;
         this.plan = plan;
         this.name = name;
@@ -37,6 +39,7 @@ export class RobotModel {
         this.danceClip = animations.find(a => a.name === "tvwalk");
         this.idleClip = animations.find(a => a.name === "tvwalk");
         this.group.rotateY(Math.PI);
+        this.repository = repository;
     }
 
     move() {
