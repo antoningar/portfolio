@@ -86,7 +86,7 @@ function init() {
                 const name = gltf.parser.json.nodes.slice(-1)[0].name
 
                 let robotModel = new RobotModel(
-                    model, robot.plan, name, robot.text, robot.title, gltf.animations)
+                    model, robot.plan, name, robot.text, robot.title, gltf.animations, robot.repository)
 
                 launchAnimationClip(robotModel, robotModel.walkClip);
                 models.push(robotModel);
@@ -179,10 +179,12 @@ function getRobotName(obj) {
     return "";
 }
 
-function printDescription(description, title) {
+function printDescription(description, title, repo) {
     modal.style.display = "block";
     modalLabel.innerHTML = description;
     modalTitle.innerHTML = title;
+    let hrefRepo = document.getElementById("hrefRepo");
+    hrefRepo.href = repo;
 }
 
 function moveCamera(position, direction) {
@@ -210,7 +212,7 @@ function onClickRobot(robotName) {
 
     const [position, direction] = robot.getFaceCameraValues();
     moveCamera(position, direction);
-    printDescription(robot.description, robot.title);
+    printDescription(robot.description, robot.title, robot.repository);
 }
 
 function onClosed() {
